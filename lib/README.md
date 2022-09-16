@@ -1,1 +1,1 @@
-# photoedit-web-js
+Download the SDK from https://developer.deepar.ai and copy the js, models and wasm directories here.

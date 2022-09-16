@@ -108,7 +108,7 @@
 
     </div>
 
-    <script type="text/javascript" src="lib/deepar.js"></script>
+    <script type="text/javascript" src="lib/js/deepar.js"></script>
     <script type="text/javascript">
 
       var canvasHeight = window.innerHeight;
@@ -119,33 +119,40 @@
         canvasWidth = Math.floor(window.innerHeight*0.66);
       }
 
-      var deepAR = DeepAR({ 
-        canvasWidth: canvasWidth, 
-        canvasHeight: canvasHeight,
-        licenseKey: 'your_license_key_goes_here',
-        canvas: document.getElementById('deepar-canvas'),
-        numberOfFaces: 1,
-        onInitialize: function() {
+      let canvas = document.getElementById('deepar-canvas');
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
 
+      var deepAR = new DeepAR({ 
+        licenseKey: 'your_license_key_here',
+        canvas: canvas,
+        segmentationConfig: {
+          modelPath: "lib/models/segmentation/segmentation-160x160-opt.bin"
         },
+        deeparWasmPath: 'lib/wasm/deepar.wasm',
+        callbacks: {
+          onInitialize: function() {
 
-        onScreenshotTaken: function(photo) {
-          var a = document.createElement('a');
-          a.href = photo;
-          a.download = 'photo.png';
-          document.body.appendChild(a);
-          a.click();
+          },
+
+          onScreenshotTaken: function(photo) {
+            var a = document.createElement('a');
+            a.href = photo;
+            a.download = 'photo.png';
+            document.body.appendChild(a);
+            a.click();
+          }
         }
       });
 
 
 
-      deepAR.onVideoStarted = function() {
+      deepAR.callbacks.onVideoStarted = function() {
         var loaderWrapper = document.getElementById('loader-wrapper');
         loaderWrapper.style.display = 'none';
       };
 
-      deepAR.downloadFaceTrackingModel('lib/models-68-extreme.bin');
+      deepAR.downloadFaceTrackingModel('lib/models/face/models-68-extreme.bin');
 
 
       // var lastImageByteArray = null;
@@ -165,6 +172,10 @@
 
         image.onload = function() {
 
+          // Process image multiple times because tracking gets more accurate with more successive frames.
+          // DeepAR face tracking has a temporal
+          deepAR.processImage(image);
+          deepAR.processImage(image);
           deepAR.processImage(image);
 
           // Alternative way to process image is by using processFrame method
