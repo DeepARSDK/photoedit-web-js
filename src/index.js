@@ -85,6 +85,7 @@ console.log("Deepar version: " + deepar.version);
   }
   document.getElementById('remove-makeup-filter').onclick = function() {
     deepAR.clearEffect();
+    deepAR.processImage(image);
   }
   document.getElementById('download-photo').onclick = async function() {
     const screenshot = await deepAR.takeScreenshot();
