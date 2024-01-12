@@ -63,9 +63,23 @@ console.log("Deepar version: " + deepar.version);
 
     return image;
   }
-  
+
+  // Initial image
+  let image = await getImage('./test_photos/camera1.jpg');
+
+  // Trigger the face tracking initialization by loading the effect.
+  deepAR.switchEffect('./effects/look1').then(() => {
+    // Clear the effect after it has been loaded.
+    deepAR.clearEffect()
+    // Push the current image frame because clearEffect can sometimes produce a black image when setPaused is called.
+    deepAR.processImage(image);
+  }).catch(() => {
+    // The switchEffectCanceled error will be thrown if we try to load some beuty effect while this promise is not resolved.
+    // So we just ignore this error.
+  });
+
   // Load the inital photo.
-  let image = await processPhoto('./test_photos/camera1.jpg');
+  image = await processPhoto(image);
 
   document.getElementById('load-photo-1').onclick = async function() {
     image = await processPhoto('./test_photos/camera1.jpg');
